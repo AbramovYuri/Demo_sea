@@ -7,13 +7,14 @@ let pi = 2 * Math.PI;
 let screenHeight = document.querySelector('.demo-screen').offsetHeight;
 let scrollLeft = 0;
 let scrollDelay = 4;
-let screenWidth = document.querySelector('.demo-screen').offsetWidth;
+//let screenWidth = document.querySelector('.demo-screen').offsetWidth;
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let pointCoord = [];
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let pointSpeed = 1;
 let pointCount, canvasWidth, canvasHeight;
+let boobleOffset = 0;
 
 
 addEventListener('resize', resize);
@@ -33,6 +34,7 @@ function mainLoop() {
     point();
     newPointCoord();
     flyingScroller();
+    boobleOffset+= .02;
     requestAnimationFrame(mainLoop);
 }
 
@@ -105,8 +107,10 @@ function point() {
     for (let i = 0; i < pointCount; i++) {
         let opacity = pointCoord[i][1] / canvasHeight - pointCoord[i][3];
         if (opacity>0){
+            xOffset = Math.sin(pointCoord[i][4])*(pointCoord[i][2] * 3) *5;
+            pointCoord[i][4]+=.02;
             ctx.beginPath();
-            ctx.arc(pointCoord[i][0], pointCoord[i][1], pointCoord[i][2] * 4, 0, circle);
+            ctx.arc(pointCoord[i][0]+xOffset, pointCoord[i][1], pointCoord[i][2] * 4, 0, circle);
             ctx.fillStyle = `rgba(200,200,200, ${opacity}`;
             ctx.fill();
         }
@@ -131,7 +135,7 @@ function resize() {
 
 function pointGenerator() {
 
-    let x, y, vY, opacity;
+    let x, y, vY, sinOffset, opacity;
 
     for (let i = 0; i < pointCount; i++) {
 
@@ -141,11 +145,13 @@ function pointGenerator() {
 
         opacity = Math.random();
 
+        sinOffset = Math.random() * (2 * Math.PI);
+
         vY = Math.random() * pointSpeed;
         if (vY === 0) {
             vY = Math.random() + .1;
         }
 
-        pointCoord[i] = [x, y, vY, opacity];
+        pointCoord[i] = [x, y, vY, opacity, sinOffset];
     }
 }
